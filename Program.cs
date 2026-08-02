@@ -1,0 +1,9 @@
+﻿using Csharp_design_patterns_lab.Behavioral.Command;
+using Csharp_design_patterns_lab.Creational.Abstract_Factory;
+using Csharp_design_patterns_lab.Creational.Builder;
+using Csharp_design_patterns_lab.Creational.Prototype;
+using Csharp_design_patterns_lab.Creational.Singleton;
+using Csharp_design_patterns_lab.Structural.Adapter;
+using Csharp_design_patterns_lab.Structural.Bridge;
+
+Command.Invoke();
