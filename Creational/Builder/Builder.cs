@@ -1,50 +1,86 @@
-﻿namespace Csharp_design_patterns_lab.Creational.Builder;
+using System;
 
-public class Shipment()
+namespace Csharp_design_patterns_lab.Creational.Builder;
+
+public class Shipment
 {
-    public string Carrier { get; set; }
+    public string Carrier { get; set; } = string.Empty;
     public decimal Weight { get; set; }
     public bool IsSignatureRequired { get; set; }
+
+    public override string ToString()
+    {
+        return $"Shipment [Carrier={Carrier}, Weight={Weight} lbs, SignatureRequired={IsSignatureRequired}]";
+    }
 }
 
 public class ShipmentBuilder
 {
-    private readonly Shipment _shipment = new Shipment();
-    
+    private string _carrier = string.Empty;
+    private decimal _weight;
+    private bool _isSignatureRequired;
+
     public ShipmentBuilder WithCarrier(string carrierName)
     {
-        _shipment.Carrier = carrierName;
+        _carrier = carrierName ?? throw new ArgumentNullException(nameof(carrierName));
         return this;
     }
 
-    public ShipmentBuilder WithWight(decimal weight)
+    public ShipmentBuilder WithWeight(decimal weight)
     {
-        _shipment.Weight = weight;
+        _weight = weight;
         return this;
     }
+
     public ShipmentBuilder WithSignatureRequired()
     {
-        _shipment.IsSignatureRequired = true;
+        _isSignatureRequired = true;
         return this;
     }
 
     public Shipment Build()
     {
-        return _shipment;
+        var shipment = new Shipment
+        {
+            Carrier = _carrier,
+            Weight = _weight,
+            IsSignatureRequired = _isSignatureRequired
+        };
+
+        Reset();
+        return shipment;
     }
 
+    private void Reset()
+    {
+        _carrier = string.Empty;
+        _weight = 0;
+        _isSignatureRequired = false;
+    }
 }
 
-
-public static class Builder
+public static class BuilderDemo
 {
     public static void Invoke()
     {
-        ShipmentBuilder shipmentBuilder = new ShipmentBuilder();
-        shipmentBuilder.WithCarrier("USPS").WithWight(10.97m).WithSignatureRequired();
-        var shipment = shipmentBuilder.Build();
+        Console.WriteLine("Builder Pattern:");
 
-        // check weight
-        Console.WriteLine(shipment.Weight);
+        ShipmentBuilder shipmentBuilder = new ShipmentBuilder();
+        
+        Shipment shipment1 = shipmentBuilder
+            .WithCarrier("USPS")
+            .WithWeight(10.97m)
+            .WithSignatureRequired()
+            .Build();
+
+        Console.WriteLine($"Shipment 1 built: {shipment1}");
+
+        Shipment shipment2 = shipmentBuilder
+            .WithCarrier("FedEx")
+            .WithWeight(2.5m)
+            .Build();
+
+        Console.WriteLine($"Shipment 2 built: {shipment2}");
+        Console.WriteLine();
     }
 }

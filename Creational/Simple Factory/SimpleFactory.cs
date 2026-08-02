@@ -1,6 +1,6 @@
-﻿namespace Csharp_design_patterns_lab.Creational.Simple_Factory;
-//Not a GoF pattern — just a helper class with a static method. One class knows how to create everything.
-//Simple, but violates Open/Closed Principle because adding a new type means editing the factory.
+using System;
+
+namespace Csharp_design_patterns_lab.Creational.Simple_Factory;
 
 public interface IShape
 {
@@ -11,7 +11,7 @@ public class Circle : IShape
 {
     public void Draw()
     {
-        Console.WriteLine("This is Circle");
+        Console.WriteLine("Drawing a Circle.");
     }
 }
 
@@ -19,30 +19,56 @@ public class Square : IShape
 {
     public void Draw()
     {
-        Console.WriteLine("This is Square");
+        Console.WriteLine("Drawing a Square.");
     }
 }
-
 
 public class Triangle : IShape
 {
     public void Draw()
     {
-        Console.WriteLine("This is Triangle ");
+        Console.WriteLine("Drawing a Triangle.");
     }
 }
 
-// Simple Factory — one class, one static method, switch on type
 public class SimpleFactory
 {
     public static IShape GetInstance(string shapeType)
     {
-        return shapeType switch
+        return shapeType.ToLowerInvariant() switch
         {
             "circle" => new Circle(),
             "square" => new Square(),
             "triangle" => new Triangle(),
-            _ => throw new ArgumentException($"Unknown shape: {shapeType}")
+            _ => throw new ArgumentException($"Unknown shape type: {shapeType}")
         };
+    }
+}
+
+public static class SimpleFactoryDemo
+{
+    public static void Invoke()
+    {
+        Console.WriteLine("Simple Factory Pattern:");
+        
+        try
+        {
+            IShape circle = SimpleFactory.GetInstance("circle");
+            circle.Draw();
+
+            IShape square = SimpleFactory.GetInstance("square");
+            square.Draw();
+
+            IShape triangle = SimpleFactory.GetInstance("triangle");
+            triangle.Draw();
+
+            SimpleFactory.GetInstance("hexagon");
+        }
+        catch (ArgumentException ex)
+        {
+            Console.WriteLine($"Expected exception caught: {ex.Message}");
+        }
+
+        Console.WriteLine();
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Csharp_design_patterns_lab.Behavioral.Command;
+namespace Csharp_design_patterns_lab.Behavioral.Command;
 
 public interface ICommand
 {
@@ -10,117 +10,210 @@ public class Light
 {
     public void On()
     {
-        Console.WriteLine("Turning on bulb");
+        Console.WriteLine("Light is ON.");
     }
 
     public void Off()
     {
-        Console.WriteLine("Turining Off bulb");
+        Console.WriteLine("Light is OFF.");
     }
 }
 
 public class Fan
 {
+    public const int MinSpeed = 0;
+    public const int MaxSpeed = 5;
+
+    public int Speed { get; private set; } = 0;
+
     public void On()
     {
-        Console.WriteLine("Turning on Fan");
+        if (Speed == 0)
+        {
+            Speed = 1;
+        }
+        Console.WriteLine($"Fan is ON (Speed: {Speed}).");
     }
 
     public void Off()
     {
-        Console.WriteLine("Turining Off Fan");
+        Speed = 0;
+        Console.WriteLine("Fan is OFF.");
     }
 
-    public void IncreaseSpeed(int speed)
+    public void IncreaseSpeed()
     {
-        Console.WriteLine($"Incresed fan speed to {speed}");
+        if (Speed < MaxSpeed)
+        {
+            Speed++;
+            Console.WriteLine($"Fan speed increased to {Speed}.");
+        }
+        else
+        {
+            Console.WriteLine($"Fan is already at maximum speed ({MaxSpeed}).");
+        }
     }
 
-    public void DecreseFanSpeed(int speed)
+    public void DecreaseSpeed()
     {
-        Console.WriteLine($"Decreased Fan speed to {speed}");
+        if (Speed > MinSpeed)
+        {
+            Speed--;
+            Console.WriteLine($"Fan speed decreased to {Speed}.");
+        }
+        else
+        {
+            Console.WriteLine($"Fan is already at minimum speed ({MinSpeed}).");
+        }
+    }
+
+    public void SetSpeed(int speed)
+    {
+        Speed = Math.Clamp(speed, MinSpeed, MaxSpeed);
+        Console.WriteLine($"Fan speed set to {Speed}.");
     }
 }
 
-public class LightCommand : ICommand
+public class LightOnCommand : ICommand
 {
-    private readonly Light light;
-    public LightCommand(Light light)
+    private readonly Light _light;
+
+    public LightOnCommand(Light light)
     {
-        this.light = light;
+        _light = light ?? throw new ArgumentNullException(nameof(light));
+    }
+
+    public void Execute() => _light.On();
+    public void Undo() => _light.Off();
+}
+
+public class LightOffCommand : ICommand
+{
+    private readonly Light _light;
+
+    public LightOffCommand(Light light)
+    {
+        _light = light ?? throw new ArgumentNullException(nameof(light));
+    }
+
+    public void Execute() => _light.Off();
+    public void Undo() => _light.On();
+}
+
+public class FanOnCommand : ICommand
+{
+    private readonly Fan _fan;
+
+    public FanOnCommand(Fan fan)
+    {
+        _fan = fan ?? throw new ArgumentNullException(nameof(fan));
+    }
+
+    public void Execute() => _fan.On();
+    public void Undo() => _fan.Off();
+}
+
+public class FanOffCommand : ICommand
+{
+    private readonly Fan _fan;
+
+    public FanOffCommand(Fan fan)
+    {
+        _fan = fan ?? throw new ArgumentNullException(nameof(fan));
+    }
+
+    public void Execute() => _fan.Off();
+    public void Undo() => _fan.On();
+}
+
+public class FanIncreaseSpeedCommand : ICommand
+{
+    private readonly Fan _fan;
+    private int _prevSpeed;
+
+    public FanIncreaseSpeedCommand(Fan fan)
+    {
+        _fan = fan ?? throw new ArgumentNullException(nameof(fan));
     }
 
     public void Execute()
     {
-        light.On();
+        _prevSpeed = _fan.Speed;
+        _fan.IncreaseSpeed();
     }
 
     public void Undo()
     {
-        light.Off();
+        _fan.SetSpeed(_prevSpeed);
     }
 }
 
-
-public class FanCommand : ICommand
+public class FanDecreaseSpeedCommand : ICommand
 {
-    private readonly Fan fan;
-    public FanCommand(Fan fan)
+    private readonly Fan _fan;
+    private int _prevSpeed;
+
+    public FanDecreaseSpeedCommand(Fan fan)
     {
-        this.fan = fan;
+        _fan = fan ?? throw new ArgumentNullException(nameof(fan));
     }
 
     public void Execute()
     {
-        fan.On();
+        _prevSpeed = _fan.Speed;
+        _fan.DecreaseSpeed();
     }
 
     public void Undo()
     {
-        fan.Off();
+        _fan.SetSpeed(_prevSpeed);
     }
 }
 
 public class Remote
 {
-    private const int numOfButtons = 4;
-    private readonly ICommand[] commands = new ICommand[4];
-    private readonly bool[] state = new bool[numOfButtons];
-
-    public Remote()
-    {
-
-    }
+    private const int NumOfButtons = 6;
+    private readonly ICommand[] _commands = new ICommand[NumOfButtons];
+    private readonly Stack<ICommand> _history = new Stack<ICommand>();
 
     public void SetCommandButton(ICommand command, int index)
     {
-        commands[index] = command;
+        if (index < 0 || index >= NumOfButtons)
+        {
+            throw new ArgumentOutOfRangeException(nameof(index), $"Button index {index} is out of bounds.");
+        }
+
+        _commands[index] = command;
     }
 
     public void PressButton(int index)
     {
-        if(index  > numOfButtons)
+        if (index < 0 || index >= NumOfButtons)
         {
-            Console.WriteLine("Outside of buttons");
-            return;
-        }
-        if (index < 0)
-        {
-            Console.WriteLine("Can not be 0");
+            throw new ArgumentOutOfRangeException(nameof(index), $"Button index {index} is out of bounds.");
         }
 
-        var cmd = commands[index];
-        bool cmdState = state[index];
-        if (!cmdState)
+        var command = _commands[index];
+        if (command == null)
         {
-            cmd.Execute();
-            state[index] = !cmdState;
+            return;
         }
-        else
+
+        Console.Write($"Button {index} pressed: ");
+        command.Execute();
+        _history.Push(command);
+    }
+
+    public void PressUndo()
+    {
+        if (_history.Count == 0)
         {
-            cmd.Undo();
-            state[index] = !cmdState;
+            return;
         }
+
+        var command = _history.Pop();
+        Console.Write("Undo pressed: ");
+        command.Undo();
     }
 }
 
@@ -128,17 +221,31 @@ public class Command
 {
     public static void Invoke()
     {
+        Console.WriteLine("Command Pattern:");
+
         Remote remote = new Remote();
-        Light light = new Light();
-        Fan fan = new Fan();
+        Light livingRoomLight = new Light();
+        Fan ceilingFan = new Fan();
 
-        ICommand lightCommand = new LightCommand(light);
-        ICommand fanCommand = new FanCommand(fan);
-
-        remote.SetCommandButton(lightCommand, 0);
-        remote.SetCommandButton(fanCommand, 1);
+        remote.SetCommandButton(new LightOnCommand(livingRoomLight), 0);
+        remote.SetCommandButton(new LightOffCommand(livingRoomLight), 1);
+        remote.SetCommandButton(new FanOnCommand(ceilingFan), 2);
+        remote.SetCommandButton(new FanOffCommand(ceilingFan), 3);
+        remote.SetCommandButton(new FanIncreaseSpeedCommand(ceilingFan), 4);
+        remote.SetCommandButton(new FanDecreaseSpeedCommand(ceilingFan), 5);
 
         remote.PressButton(0);
-        remote.PressButton(0);
+        remote.PressButton(2);
+        remote.PressButton(4);
+        remote.PressButton(4);
+        remote.PressButton(5);
+
+        remote.PressUndo();
+        remote.PressUndo();
+
+        remote.PressButton(1);
+        remote.PressButton(3);
+
+        Console.WriteLine();
     }
 }

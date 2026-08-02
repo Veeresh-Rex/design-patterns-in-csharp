@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System;
 
 namespace Csharp_design_patterns_lab.Structural.Facade;
 
@@ -8,73 +6,80 @@ public class Computer
 {
     public void GetElectricShock()
     {
-        Console.Write("Ouch!");
+        Console.WriteLine("Ouch! Static electricity shock.");
     }
 
     public void MakeSound()
     {
-        Console.Write("Beep beep!");
+        Console.WriteLine("Beep beep! POST passed.");
     }
 
     public void ShowLoadingScreen()
     {
-        Console.Write("Loading..");
+        Console.WriteLine("Loading operating system...");
     }
 
     public void Bam()
     {
-        Console.Write("Ready to be used!");
+        Console.WriteLine("Ready to be used!");
     }
 
     public void CloseEverything()
     {
-        Console.Write("Bup bup bup buzzzz!");
+        Console.WriteLine("Closing running applications...");
     }
 
     public void Sooth()
     {
-        Console.Write("Zzzzz");
+        Console.WriteLine("Spinning down hard drives (Zzzzz)...");
     }
 
     public void PullCurrent()
     {
-        Console.Write("Haaah!");
+        Console.WriteLine("Cutting power. Haaah!");
     }
 }
 
-class ComputerFacade
+public class ComputerFacade
 {
-    private readonly Computer mComputer;
+    private readonly Computer _computer;
 
     public ComputerFacade(Computer computer)
     {
-        this.mComputer = computer ?? throw new ArgumentNullException("computer", "computer cannot be null");
+        _computer = computer ?? throw new ArgumentNullException(nameof(computer));
     }
 
     public void TurnOn()
     {
-        mComputer.GetElectricShock();
-        mComputer.MakeSound();
-        mComputer.ShowLoadingScreen();
-        mComputer.Bam();
+        Console.WriteLine("Booting system...");
+        _computer.GetElectricShock();
+        _computer.MakeSound();
+        _computer.ShowLoadingScreen();
+        _computer.Bam();
     }
 
     public void TurnOff()
     {
-        mComputer.CloseEverything();
-        mComputer.PullCurrent();
-        mComputer.Sooth();
+        Console.WriteLine("Shutting down system...");
+        _computer.CloseEverything();
+        _computer.PullCurrent();
+        _computer.Sooth();
     }
 }
 
-public static class Facade
+public static class FacadeDemo
 {
     public static void Invoke()
     {
+        Console.WriteLine("Facade Pattern:");
+
         Computer computer = new Computer();
         ComputerFacade computerFacade = new ComputerFacade(computer);
+        
         computerFacade.TurnOn();
         Console.WriteLine();
+        
         computerFacade.TurnOff();
+        Console.WriteLine();
     }
 }

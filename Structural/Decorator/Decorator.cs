@@ -1,39 +1,71 @@
-﻿namespace Csharp_design_patterns_lab.Structural.Decorator;
+using System;
 
-public interface IMessageService
+namespace Csharp_design_patterns_lab.Structural.Decorator;
+
+public interface ICharacter
 {
-    void SendMessage(string message);
+    string GetPower();
 }
 
-public class EmailService : IMessageService
+public class Mario : ICharacter
 {
-    public void SendMessage(string message)
+    public string GetPower()
     {
-        Console.WriteLine("Message Send " + message);
+        return "Mario";
     }
 }
 
-// New wrapperr
-public class LoggingDecorator : IMessageService
+public abstract class PowerDecorator : ICharacter
 {
-    private readonly IMessageService _messageService;
+    protected readonly ICharacter Character;
 
-    public LoggingDecorator(IMessageService messageService)
+    protected PowerDecorator(ICharacter character)
     {
-        _messageService = messageService;
+        Character = character ?? throw new ArgumentNullException(nameof(character));
     }
-    public void SendMessage(string message)
+
+    public abstract string GetPower();
+}
+
+public class HeightUpPower : PowerDecorator
+{
+    public HeightUpPower(ICharacter character) : base(character)
     {
-        Console.WriteLine("Logging");
-        _messageService.SendMessage(message);
+    }
+
+    public override string GetPower()
+    {
+        return Character.GetPower() + " Height up";
     }
 }
 
-public static class Decorator
+public class GunPower : PowerDecorator
+{
+    public GunPower(ICharacter character) : base(character)
+    {
+    }
+
+    public override string GetPower()
+    {
+        return Character.GetPower() + " With Gun";
+    }
+}
+
+public static class DecoratorDemo
 {
     public static void Invoke()
     {
-        IMessageService loggingDecorator = new LoggingDecorator(new EmailService());
-        loggingDecorator.SendMessage("'Hey what's up?");
+        Console.WriteLine("Decorator Pattern:");
+
+        ICharacter mario = new Mario();
+        Console.WriteLine(mario.GetPower());
+
+        mario = new HeightUpPower(mario);
+        Console.WriteLine(mario.GetPower());
+
+        mario = new GunPower(mario);
+        Console.WriteLine(mario.GetPower());
+
+        Console.WriteLine();
     }
 }
