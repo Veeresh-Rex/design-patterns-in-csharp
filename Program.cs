@@ -1,4 +1,4 @@
-using System;
+using Csharp_design_patterns_lab.Behavioral.ChainOfResponsibility;
 using Csharp_design_patterns_lab.Behavioral.Command;
 using Csharp_design_patterns_lab.Creational.Abstract_Factory;
 using Csharp_design_patterns_lab.Creational.Builder;
@@ -10,6 +10,7 @@ using Csharp_design_patterns_lab.Structural.Adapter;
 using Csharp_design_patterns_lab.Structural.Bridge;
 using Csharp_design_patterns_lab.Structural.Decorator;
 using Csharp_design_patterns_lab.Structural.Facade;
+using System;
 
 Console.WriteLine("C# Design Patterns Lab\n");
 Console.WriteLine("Select a Design Pattern to execute:");
@@ -24,7 +25,8 @@ Console.WriteLine("8. Bridge Pattern");
 Console.WriteLine("9. Decorator Pattern");
 Console.WriteLine("10. Facade Pattern");
 Console.WriteLine("11. Command Pattern");
-Console.WriteLine("12. Run All Patterns");
+Console.WriteLine("12. Chain Of Responsbility Pattern");
+Console.WriteLine("13. Run All Patterns");
 Console.WriteLine("0. Exit\n");
 
 Console.Write("Enter option number: ");
@@ -68,6 +70,9 @@ switch (input?.Trim())
         Command.Invoke();
         break;
     case "12":
+        ChainOfResponsbility.Invoke();
+        break;
+    case "13":
         SingletonDemo.Invoke();
         SimpleFactoryDemo.Invoke();
         FactoryMethodDemo.Invoke();
