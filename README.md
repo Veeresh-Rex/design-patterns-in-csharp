@@ -37,40 +37,7 @@ LLD-CSharp/
 │       └── Strategy/
 │
 ├── Problems/
-│   ├── 01_ParkingLot/
-│   │   ├── ParkingLot.sln
-│   │   ├── src/ParkingLot/
-│   │   │   ├── Enums/
-│   │   │   ├── Interfaces/
-│   │   │   ├── Models/
-│   │   │   ├── Services/
-│   │   │   └── Program.cs
-│   │   └── tests/ParkingLot.Tests/
-│   │
-│   ├── 02_NotificationService/
-│   │   ├── NotificationService.sln
-│   │   ├── src/NotificationService/
-│   │   │   ├── Channels/
-│   │   │   ├── Interfaces/
-│   │   │   ├── Models/
-│   │   │   ├── Services/
-│   │   │   └── Program.cs
-│   │   └── tests/NotificationService.Tests/
-│   │
-│   ├── 03_CoffeeMachine/
-│   ├── 04_VendingMachine/
-│   ├── 05_ElevatorSystem/
-│   ├── 06_LibraryManagement/
-│   ├── 07_CarRental/
-│   ├── 08_HotelManagement/
-│   ├── 09_TicTacToe/
-│   ├── 10_Chess/
-│   ├── 11_SnakeAndLadder/
-│   ├── 12_Logger/
-│   ├── 13_RateLimiter/
-│   ├── 14_Cache/
-│   ├── 15_AuctionSystem/
-│   └── 16_DocumentEditor/
+│   └── 01_DocumentEditor/
 │       ├── DocumentEditor.sln
 │       ├── src/DocumentEditor/
 │       │   ├── Elements/
@@ -172,22 +139,7 @@ Take care of effective communication and the assignment of responsibilities betw
 
 | # | Problem | Solution | Tests | Description |
 |---|---|---|---|---|
-| 01 | **ParkingLot** | [ParkingLot.sln](./Problems/01_ParkingLot/ParkingLot.sln) | [ParkingLot.Tests](./Problems/01_ParkingLot/tests/ParkingLot.Tests) | Multi-floor parking lot with spot assignment & fee calculation. |
-| 02 | **NotificationService** | [NotificationService.sln](./Problems/02_NotificationService/NotificationService.sln) | [NotificationService.Tests](./Problems/02_NotificationService/tests/NotificationService.Tests) | Multi-channel notification dispatch system with observers. |
-| 03 | **CoffeeMachine** | [Directory](./Problems/03_CoffeeMachine) | - | Coffee dispensing system with customizable ingredients. |
-| 04 | **VendingMachine** | [Directory](./Problems/04_VendingMachine) | - | State-based item selection and change calculation. |
-| 05 | **ElevatorSystem** | [Directory](./Problems/05_ElevatorSystem) | - | Multi-elevator dispatch strategy and request queuing. |
-| 06 | **LibraryManagement** | [Directory](./Problems/06_LibraryManagement) | - | Book checkout, reservation, and late fee tracking. |
-| 07 | **CarRental** | [Directory](./Problems/07_CarRental) | - | Vehicle inventory reservation and billing system. |
-| 08 | **HotelManagement** | [Directory](./Problems/08_HotelManagement) | - | Room booking, housekeeping, and guest invoicing. |
-| 09 | **TicTacToe** | [Directory](./Problems/09_TicTacToe) | - | N x N Tic-Tac-Toe game engine with win validation. |
-| 10 | **Chess** | [Directory](./Problems/10_Chess) | - | Chess piece movement validation and board management. |
-| 11 | **SnakeAndLadder** | [Directory](./Problems/11_SnakeAndLadder) | - | Multi-player board game simulation. |
-| 12 | **Logger** | [Directory](./Problems/12_Logger) | - | Multi-sink logging framework with log levels. |
-| 13 | **RateLimiter** | [Directory](./Problems/13_RateLimiter) | - | Token bucket and sliding window rate limiting. |
-| 14 | **Cache** | [Directory](./Problems/14_Cache) | - | In-memory key-value cache with LRU eviction policy. |
-| 15 | **AuctionSystem** | [Directory](./Problems/15_AuctionSystem) | - | Real-time bidding engine with dynamic notifications. |
-| 16 | **DocumentEditor** | [DocumentEditor.sln](./Problems/16_DocumentEditor/DocumentEditor.sln) | [DocumentEditor.Tests](./Problems/16_DocumentEditor/tests/DocumentEditor.Tests) | Rich document composition editor with text, images, blob storage, and DB persistence. |
+| 01 | **DocumentEditor** | [DocumentEditor.sln](./Problems/01_DocumentEditor/DocumentEditor.sln) | [DocumentEditor.Tests](./Problems/01_DocumentEditor/tests/DocumentEditor.Tests) | Rich document composition editor with text, images, blob storage, and DB persistence. |
 
 ---
 
