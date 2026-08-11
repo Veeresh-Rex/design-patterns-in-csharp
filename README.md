@@ -1,25 +1,108 @@
-# C# Design Patterns Lab
+# LLD-CSharp: Design Patterns & Low-Level Design Lab
 
-Welcome to the **C# Design Patterns Lab** repository! This project serves as a hands-on, executable reference guide to fundamental Software Design Patterns in C# (.NET 10). It is structured into Gang of Four (GoF) categories: **Creational**, **Structural**, and **Behavioral**.
-
-Each pattern includes a complete C# implementation and a dedicated `README.md` detailing its intent, real-world applicability, implementation details, and output traces.
+Welcome to **LLD-CSharp**! This repository is a comprehensive, structured reference guide and hands-on lab for **Software Design Patterns** and **Low-Level System Design (LLD)** in C# (.NET 10).
 
 ---
 
-## 🚀 How to Run
+## 📂 Repository Structure
 
-To run the interactive demonstration CLI:
+```text
+LLD-CSharp/
+│
+├── README.md
+├── Csharp-design-patterns-lab.sln
+│
+├── DesignPatterns/
+│   ├── Creational/
+│   │   ├── AbstractFactory/
+│   │   ├── Builder/
+│   │   ├── Factory/
+│   │   ├── Prototype/
+│   │   ├── SimpleFactory/
+│   │   └── Singleton/
+│   │
+│   ├── Structural/
+│   │   ├── Adapter/
+│   │   ├── Bridge/
+│   │   ├── Composite/
+│   │   ├── Decorator/
+│   │   └── Facade/
+│   │
+│   └── Behavioral/
+│       ├── ChainOfResponsibility/
+│       ├── Command/
+│       ├── Memento/
+│       ├── Observer/
+│       ├── State/
+│       └── Strategy/
+│
+├── Problems/
+│   ├── 01_ParkingLot/
+│   │   ├── ParkingLot.sln
+│   │   ├── src/ParkingLot/
+│   │   │   ├── Enums/
+│   │   │   ├── Interfaces/
+│   │   │   ├── Models/
+│   │   │   ├── Services/
+│   │   │   └── Program.cs
+│   │   └── tests/ParkingLot.Tests/
+│   │
+│   ├── 02_NotificationService/
+│   │   ├── NotificationService.sln
+│   │   ├── src/NotificationService/
+│   │   │   ├── Channels/
+│   │   │   ├── Interfaces/
+│   │   │   ├── Models/
+│   │   │   ├── Services/
+│   │   │   └── Program.cs
+│   │   └── tests/NotificationService.Tests/
+│   │
+│   ├── 03_CoffeeMachine/
+│   ├── 04_VendingMachine/
+│   ├── 05_ElevatorSystem/
+│   ├── 06_LibraryManagement/
+│   ├── 07_CarRental/
+│   ├── 08_HotelManagement/
+│   ├── 09_TicTacToe/
+│   ├── 10_Chess/
+│   ├── 11_SnakeAndLadder/
+│   ├── 12_Logger/
+│   ├── 13_RateLimiter/
+│   ├── 14_Cache/
+│   ├── 15_AuctionSystem/
+│   └── 16_DocumentEditor/
+│       ├── DocumentEditor.sln
+│       ├── src/DocumentEditor/
+│       │   ├── Elements/
+│       │   ├── Interfaces/
+│       │   ├── Models/
+│       │   ├── Repositories/
+│       │   ├── Services/
+│       │   └── Program.cs
+│       └── tests/DocumentEditor.Tests/
+│
+└── Notes/
+    ├── SOLID.md
+    ├── OOP.md
+    ├── UML.md
+    └── LLD-Checklist.md
+```
+
+---
+
+## 🚀 Getting Started
 
 ```bash
 # Clone the repository
 git clone <repository-url>
 cd Csharp-design-patterns-lab
 
-# Run the project
+# Build and run the interactive Design Patterns CLI
+dotnet build
 dotnet run
 ```
 
-Upon launching, an interactive menu allows you to select and execute individual design pattern demonstrations or run all patterns sequentially:
+Upon launching `dotnet run`, an interactive CLI menu allows executing individual design pattern demonstrations or running all patterns sequentially:
 
 ```text
 Select a Design Pattern to execute:
@@ -33,88 +116,84 @@ Select a Design Pattern to execute:
 8. Bridge Pattern
 9. Decorator Pattern
 10. Facade Pattern
-11. Command Pattern
-12. Chain Of Responsibility Pattern
-13. Run All Patterns
+11. Composite Pattern
+12. Command Pattern
+13. Chain Of Responsibility Pattern
+14. Strategy Pattern
+15. Observer Pattern
+16. State Pattern
+17. Memento Pattern
+18. Run All Patterns
 0. Exit
 ```
 
 ---
 
-## 📂 Design Patterns Navigation
-
-Navigate directly to any pattern's implementation code or documentation using the links below:
+## 🏛️ Design Patterns Index
 
 ### 🏗️ Creational Patterns
-Creational patterns deal with object creation mechanisms, trying to create objects in a manner suitable to the situation.
+Deal with object creation mechanisms to increase flexibility and reuse of existing code.
 
 | Pattern | Code Implementation | Documentation | Description |
 | :--- | :--- | :--- | :--- |
-| **Singleton** | [Singleton.cs](./Creational/Singleton/Singleton.cs) | [README.md](./Creational/Singleton/README.md) | Ensures a class has only one instance and provides a global point of access to it. |
-| **Simple Factory** | [SimpleFactory.cs](./Creational/Simple%20Factory/SimpleFactory.cs) | [README.md](./Creational/Simple%20Factory/README.md) | Encapsulates object instantiation logic into a single method based on criteria. |
-| **Factory Method** | [FactoryMethod.cs](./Creational/Factory%20Method/FactoryMethod.cs) | [README.md](./Creational/Factory%20Method/README.md) | Defines an interface for creating objects, delegating instantiation to subclasses. |
-| **Abstract Factory** | [AbstractFactory.cs](./Creational/Abstract%20Factory/AbstractFactory.cs) | [README.md](./Creational/Abstract%20Factory/README.md) | Creates families of related or dependent objects without specifying concrete classes. |
-| **Prototype** | [Prototype.cs](./Creational/Prototype/Prototype.cs) | [README.md](./Creational/Prototype/README.md) | Creates new objects by cloning an existing prototypical instance (shallow & deep copy). |
-| **Builder** | [Builder.cs](./Creational/Builder/Builder.cs) | [README.md](./Creational/Builder/README.md) | Constructs complex objects step-by-step, separating construction from representation. |
-
----
+| **Singleton** | [Singleton.cs](./DesignPatterns/Creational/Singleton/Singleton.cs) | [README.md](./DesignPatterns/Creational/Singleton/README.md) | Ensures a class has only one instance and provides global access. |
+| **Simple Factory** | [SimpleFactory.cs](./DesignPatterns/Creational/SimpleFactory/SimpleFactory.cs) | [README.md](./DesignPatterns/Creational/SimpleFactory/README.md) | Encapsulates object instantiation logic into a single factory method. |
+| **Factory Method** | [FactoryMethod.cs](./DesignPatterns/Creational/Factory/FactoryMethod.cs) | [README.md](./DesignPatterns/Creational/Factory/README.md) | Defines an interface for object creation, delegating instantiation to subclasses. |
+| **Abstract Factory** | [AbstractFactory.cs](./DesignPatterns/Creational/AbstractFactory/AbstractFactory.cs) | [README.md](./DesignPatterns/Creational/AbstractFactory/README.md) | Produces families of related objects without specifying concrete classes. |
+| **Prototype** | [Prototype.cs](./DesignPatterns/Creational/Prototype/Prototype.cs) | [README.md](./DesignPatterns/Creational/Prototype/README.md) | Copies existing objects without making code dependent on their classes. |
+| **Builder** | [Builder.cs](./DesignPatterns/Creational/Builder/Builder.cs) | [README.md](./DesignPatterns/Creational/Builder/README.md) | Constructs complex objects step-by-step. |
 
 ### 🏛️ Structural Patterns
-Structural patterns deal with object composition or class inheritance to form larger, more flexible structures.
+Explain how to assemble objects and classes into larger structures while keeping these structures flexible and efficient.
 
 | Pattern | Code Implementation | Documentation | Description |
 | :--- | :--- | :--- | :--- |
-| **Adapter** | [Adapter.cs](./Structural/Adapter/Adapter.cs) | [README.md](./Structural/Adapter/README.md) | Converts the interface of a class into another interface expected by the client. |
-| **Bridge** | [Bridge.cs](./Structural/Bridge/Bridge.cs) | [README.md](./Structural/Bridge/README.md) | Decouples an abstraction from its implementation so both can vary independently. |
-| **Decorator** | [Decorator.cs](./Structural/Decorator/Decorator.cs) | [README.md](./Structural/Decorator/README.md) | Dynamically attaches additional responsibilities to an object at runtime. |
-| **Facade** | [Facade.cs](./Structural/Facade/Facade.cs) | [README.md](./Structural/Facade/README.md) | Provides a simplified higher-level interface to a complex subsystem. |
-
----
+| **Adapter** | [Adapter.cs](./DesignPatterns/Structural/Adapter/Adapter.cs) | [README.md](./DesignPatterns/Structural/Adapter/README.md) | Allows objects with incompatible interfaces to collaborate. |
+| **Bridge** | [Bridge.cs](./DesignPatterns/Structural/Bridge/Bridge.cs) | [README.md](./DesignPatterns/Structural/Bridge/README.md) | Splits a large class or set of related classes into two separate hierarchies. |
+| **Composite** | [Composite.cs](./DesignPatterns/Structural/Composite/Composite.cs) | [README.md](./DesignPatterns/Structural/Composite/README.md) | Composes objects into tree structures to represent part-whole hierarchies. |
+| **Decorator** | [Decorator.cs](./DesignPatterns/Structural/Decorator/Decorator.cs) | [README.md](./DesignPatterns/Structural/Decorator/README.md) | Attaches new behaviors to objects by placing them inside special wrapper objects. |
+| **Facade** | [Facade.cs](./DesignPatterns/Structural/Facade/Facade.cs) | [README.md](./DesignPatterns/Structural/Facade/README.md) | Provides a simplified interface to a library, a framework, or any complex set of classes. |
 
 ### 🔄 Behavioral Patterns
-Behavioral patterns focus on algorithms, assignments of responsibilities, and communication between objects.
+Take care of effective communication and the assignment of responsibilities between objects.
 
 | Pattern | Code Implementation | Documentation | Description |
 | :--- | :--- | :--- | :--- |
-| **Command** | [Command.cs](./Behavioral/Command/Command.cs) | [README.md](./Behavioral/Command/README.md) | Encapsulates a request as an object, enabling parameterization, queues, and undo operations. |
-| **Chain of Responsibility** | [ChainOfResponsbility.cs](./Behavioral/ChainOfResponsibility/ChainOfResponsbility.cs) | [README.md](./Behavioral/ChainOfResponsibility/README.md) | Passes a request along a chain of handlers until one handles it or the chain ends. |
+| **Chain of Responsibility** | [ChainOfResponsbility.cs](./DesignPatterns/Behavioral/ChainOfResponsibility/ChainOfResponsbility.cs) | [README.md](./DesignPatterns/Behavioral/ChainOfResponsibility/README.md) | Passes requests along a chain of handlers. |
+| **Command** | [Command.cs](./DesignPatterns/Behavioral/Command/Command.cs) | [README.md](./DesignPatterns/Behavioral/Command/README.md) | Turns a request into a stand-alone object containing all information about the request. |
+| **Memento** | [Memento.cs](./DesignPatterns/Behavioral/Memento/Memento.cs) | [README.md](./DesignPatterns/Behavioral/Memento/README.md) | Saves and restores the previous state of an object without revealing implementation details. |
+| **Observer** | [Observer.cs](./DesignPatterns/Behavioral/Observer/Observer.cs) | [README.md](./DesignPatterns/Behavioral/Observer/README.md) | Subscription mechanism to notify multiple objects about events. |
+| **State** | [State.cs](./DesignPatterns/Behavioral/State/State.cs) | [README.md](./DesignPatterns/Behavioral/State/README.md) | Lets an object alter its behavior when its internal state changes. |
+| **Strategy** | [Strategy.cs](./DesignPatterns/Behavioral/Strategy/Strategy.cs) | [README.md](./DesignPatterns/Behavioral/Strategy/README.md) | Defines a family of algorithms, puts each into a separate class, and makes objects interchangeable. |
 
 ---
 
-## 📐 Repository Architecture
+## 🛠️ Low-Level Design Problems
 
-```text
-Csharp-design-patterns-lab/
-├── Program.cs                         # Interactive CLI entry point
-├── Creational/                        # Creational Design Patterns
-│   ├── Abstract Factory/
-│   ├── Builder/
-│   ├── Factory Method/
-│   ├── Prototype/
-│   ├── Simple Factory/
-│   └── Singleton/
-├── Structural/                        # Structural Design Patterns
-│   ├── Adapter/
-│   ├── Bridge/
-│   ├── Decorator/
-│   └── Facade/
-└── Behavioral/                        # Behavioral Design Patterns
-    ├── ChainOfResponsibility/
-    └── Command/
-```
-
----
-
-## 🛠️ Prerequisites
-
-- [.NET 10.0 SDK](https://dotnet.microsoft.com/download) (or compatible .NET version)
-- Any modern C# IDE (Visual Studio, VS Code, JetBrains Rider)
+| # | Problem | Solution | Tests | Description |
+|---|---|---|---|---|
+| 01 | **ParkingLot** | [ParkingLot.sln](./Problems/01_ParkingLot/ParkingLot.sln) | [ParkingLot.Tests](./Problems/01_ParkingLot/tests/ParkingLot.Tests) | Multi-floor parking lot with spot assignment & fee calculation. |
+| 02 | **NotificationService** | [NotificationService.sln](./Problems/02_NotificationService/NotificationService.sln) | [NotificationService.Tests](./Problems/02_NotificationService/tests/NotificationService.Tests) | Multi-channel notification dispatch system with observers. |
+| 03 | **CoffeeMachine** | [Directory](./Problems/03_CoffeeMachine) | - | Coffee dispensing system with customizable ingredients. |
+| 04 | **VendingMachine** | [Directory](./Problems/04_VendingMachine) | - | State-based item selection and change calculation. |
+| 05 | **ElevatorSystem** | [Directory](./Problems/05_ElevatorSystem) | - | Multi-elevator dispatch strategy and request queuing. |
+| 06 | **LibraryManagement** | [Directory](./Problems/06_LibraryManagement) | - | Book checkout, reservation, and late fee tracking. |
+| 07 | **CarRental** | [Directory](./Problems/07_CarRental) | - | Vehicle inventory reservation and billing system. |
+| 08 | **HotelManagement** | [Directory](./Problems/08_HotelManagement) | - | Room booking, housekeeping, and guest invoicing. |
+| 09 | **TicTacToe** | [Directory](./Problems/09_TicTacToe) | - | N x N Tic-Tac-Toe game engine with win validation. |
+| 10 | **Chess** | [Directory](./Problems/10_Chess) | - | Chess piece movement validation and board management. |
+| 11 | **SnakeAndLadder** | [Directory](./Problems/11_SnakeAndLadder) | - | Multi-player board game simulation. |
+| 12 | **Logger** | [Directory](./Problems/12_Logger) | - | Multi-sink logging framework with log levels. |
+| 13 | **RateLimiter** | [Directory](./Problems/13_RateLimiter) | - | Token bucket and sliding window rate limiting. |
+| 14 | **Cache** | [Directory](./Problems/14_Cache) | - | In-memory key-value cache with LRU eviction policy. |
+| 15 | **AuctionSystem** | [Directory](./Problems/15_AuctionSystem) | - | Real-time bidding engine with dynamic notifications. |
+| 16 | **DocumentEditor** | [DocumentEditor.sln](./Problems/16_DocumentEditor/DocumentEditor.sln) | [DocumentEditor.Tests](./Problems/16_DocumentEditor/tests/DocumentEditor.Tests) | Rich document composition editor with text, images, blob storage, and DB persistence. |
 
 ---
 
-## 🤝 Contributing & Extension
+## 📚 Study Notes
 
-Feel free to add new design patterns (e.g., *Observer*, *Strategy*, *State*, *Composite*, *Flyweight*) by adding a new directory under the respective category folder containing:
-1. `<PatternName>.cs` implementing the pattern along with an `Invoke()` method for the CLI trace.
-2. `README.md` detailing the pattern's Intent, When to Use, Implementation details, and Output Trace.
-3. Updating `Program.cs` menu options.
+- 📘 [SOLID Principles](./Notes/SOLID.md)
+- 📗 [OOP Fundamentals](./Notes/OOP.md)
+- 📙 [UML Diagrams Guide](./Notes/UML.md)
+- 📓 [LLD Interview Checklist](./Notes/LLD-Checklist.md)

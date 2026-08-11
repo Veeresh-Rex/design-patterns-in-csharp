@@ -1,18 +1,23 @@
-using Csharp_design_patterns_lab.Behavioral.ChainOfResponsibility;
-using Csharp_design_patterns_lab.Behavioral.Command;
-using Csharp_design_patterns_lab.Creational.Abstract_Factory;
-using Csharp_design_patterns_lab.Creational.Builder;
-using Csharp_design_patterns_lab.Creational.Factory_Method;
-using Csharp_design_patterns_lab.Creational.Prototype;
-using Csharp_design_patterns_lab.Creational.Simple_Factory;
-using Csharp_design_patterns_lab.Creational.Singleton;
-using Csharp_design_patterns_lab.Structural.Adapter;
-using Csharp_design_patterns_lab.Structural.Bridge;
-using Csharp_design_patterns_lab.Structural.Decorator;
-using Csharp_design_patterns_lab.Structural.Facade;
+using Csharp_design_patterns_lab.DesignPatterns.Behavioral.ChainOfResponsibility;
+using Csharp_design_patterns_lab.DesignPatterns.Behavioral.Command;
+using Csharp_design_patterns_lab.DesignPatterns.Behavioral.Memento;
+using Csharp_design_patterns_lab.DesignPatterns.Behavioral.Observer;
+using Csharp_design_patterns_lab.DesignPatterns.Behavioral.State;
+using Csharp_design_patterns_lab.DesignPatterns.Behavioral.Strategy;
+using Csharp_design_patterns_lab.DesignPatterns.Creational.AbstractFactory;
+using Csharp_design_patterns_lab.DesignPatterns.Creational.Builder;
+using Csharp_design_patterns_lab.DesignPatterns.Creational.Factory;
+using Csharp_design_patterns_lab.DesignPatterns.Creational.Prototype;
+using Csharp_design_patterns_lab.DesignPatterns.Creational.SimpleFactory;
+using Csharp_design_patterns_lab.DesignPatterns.Creational.Singleton;
+using Csharp_design_patterns_lab.DesignPatterns.Structural.Adapter;
+using Csharp_design_patterns_lab.DesignPatterns.Structural.Bridge;
+using Csharp_design_patterns_lab.DesignPatterns.Structural.Composite;
+using Csharp_design_patterns_lab.DesignPatterns.Structural.Decorator;
+using Csharp_design_patterns_lab.DesignPatterns.Structural.Facade;
 using System;
 
-Console.WriteLine("C# Design Patterns Lab\n");
+Console.WriteLine("C# Design Patterns Lab & Low-Level Design Repository\n");
 Console.WriteLine("Select a Design Pattern to execute:");
 Console.WriteLine("1. Singleton Pattern");
 Console.WriteLine("2. Simple Factory Pattern");
@@ -24,9 +29,14 @@ Console.WriteLine("7. Adapter Pattern");
 Console.WriteLine("8. Bridge Pattern");
 Console.WriteLine("9. Decorator Pattern");
 Console.WriteLine("10. Facade Pattern");
-Console.WriteLine("11. Command Pattern");
-Console.WriteLine("12. Chain Of Responsbility Pattern");
-Console.WriteLine("13. Run All Patterns");
+Console.WriteLine("11. Composite Pattern");
+Console.WriteLine("12. Command Pattern");
+Console.WriteLine("13. Chain Of Responsibility Pattern");
+Console.WriteLine("14. Strategy Pattern");
+Console.WriteLine("15. Observer Pattern");
+Console.WriteLine("16. State Pattern");
+Console.WriteLine("17. Memento Pattern");
+Console.WriteLine("18. Run All Patterns");
 Console.WriteLine("0. Exit\n");
 
 Console.Write("Enter option number: ");
@@ -67,12 +77,27 @@ switch (input?.Trim())
         FacadeDemo.Invoke();
         break;
     case "11":
-        Command.Invoke();
+        CompositeDemo.Invoke();
         break;
     case "12":
-        ChainOfResponsbility.Invoke();
+        Command.Invoke();
         break;
     case "13":
+        ChainOfResponsbility.Invoke();
+        break;
+    case "14":
+        StrategyDemo.Invoke();
+        break;
+    case "15":
+        ObserverDemo.Invoke();
+        break;
+    case "16":
+        StateDemo.Invoke();
+        break;
+    case "17":
+        MementoDemo.Invoke();
+        break;
+    case "18":
         SingletonDemo.Invoke();
         SimpleFactoryDemo.Invoke();
         FactoryMethodDemo.Invoke();
@@ -83,7 +108,13 @@ switch (input?.Trim())
         BridgeDemo.Invoke();
         DecoratorDemo.Invoke();
         FacadeDemo.Invoke();
+        CompositeDemo.Invoke();
         Command.Invoke();
+        ChainOfResponsbility.Invoke();
+        StrategyDemo.Invoke();
+        ObserverDemo.Invoke();
+        StateDemo.Invoke();
+        MementoDemo.Invoke();
         break;
     case "0":
         Console.WriteLine("Exiting program.");
