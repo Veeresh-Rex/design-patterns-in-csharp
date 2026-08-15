@@ -1,4 +1,4 @@
-﻿using FoodDeliveryApp.Enums;
+using FoodDeliveryApp.Enums;
 using FoodDeliveryApp.Observers;
 using FoodDeliveryApp.Strategies.Payment;
 
@@ -9,7 +9,8 @@ public class Order
     private readonly string _id;
     private OrderStatus _status;
     private readonly Cart _cart;
-    private readonly List<IOrderObserver> observers = new List<IOrderObserver>();
+    private readonly double _totalAmount;
+    private readonly List<IOrderObserver> _observers = new();
     private readonly User _user;
     private readonly Restaurant _restaurant;
 
@@ -18,25 +19,38 @@ public class Order
         _id = id;
         _cart = cart;
         _user = user;
-        AddObserver(user);
-        AddObserver(restaurant);
+        _restaurant = restaurant;
+        _totalAmount = cart.GetTotalValue();
+
+        if (user != null) AddObserver(user);
+        if (restaurant != null) AddObserver(restaurant);
     }
-    
-    public string GetId()
-    {
-        return _id;
-    }
+
+    public string GetId() => _id;
+    public OrderStatus GetStatus() => _status;
+    public double GetTotalAmount() => _totalAmount;
+    public User GetUser() => _user;
+    public Restaurant GetRestaurant() => _restaurant;
 
     public void AddObserver(IOrderObserver observer)
     {
-        observers.Add(observer);
+        if (observer != null && !_observers.Contains(observer))
+        {
+            _observers.Add(observer);
+        }
     }
 
-    public OrderStatus GetStatus() { return _status; }
+    public void RemoveObserver(IOrderObserver observer)
+    {
+        if (observer != null)
+        {
+            _observers.Remove(observer);
+        }
+    }
 
     public void NotifyObservers()
     {
-        foreach (IOrderObserver observer in observers)
+        foreach (IOrderObserver observer in _observers.ToList())
         {
             observer.Notify(this);
         }
@@ -48,8 +62,11 @@ public class Order
         NotifyObservers();
     }
 
-    public void Checkout(IPaymentStrategy paymentStrategy)
+    public bool Checkout(IPaymentStrategy paymentStrategy)
     {
-        paymentStrategy.Pay(_cart.GetTotalValue(), _user);
+        if (paymentStrategy == null)
+            throw new ArgumentNullException(nameof(paymentStrategy), "Payment strategy cannot be null.");
+
+        return paymentStrategy.Pay(_totalAmount, _user);
     }
 }

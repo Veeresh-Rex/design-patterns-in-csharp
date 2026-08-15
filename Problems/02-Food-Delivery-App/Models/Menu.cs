@@ -1,23 +1,26 @@
-﻿namespace FoodDeliveryApp.Models;
+namespace FoodDeliveryApp.Models;
 
 public class Menu
 {
-    private readonly List<Menuitem> menuitems = new List<Menuitem>();
-    public void AddItems(Menuitem menuitem)
+    private readonly List<MenuItem> _menuItems = new();
+
+    public void AddItems(MenuItem menuItem)
     {
-        menuitems.Add(menuitem);
+        _menuItems.Add(menuItem);
     }
 
-    public List<Menuitem> GetItems()
+    public IReadOnlyList<MenuItem> GetItems()
     {
-        return menuitems;
+        return _menuItems.AsReadOnly();
     }
 
     public void WatchMenu()
     {
-        foreach (var item in menuitems)
+        Console.WriteLine("--- Menu Items ---");
+        foreach (var item in _menuItems)
         {
-            Console.WriteLine($"{item.GetName()}: Price: {item.GetPrice()}");
+            Console.WriteLine($"Item: {item.GetName()} | Price: ₹{item.GetPrice()} | ID: {item.GetId()}");
         }
+        Console.WriteLine("------------------");
     }
 }

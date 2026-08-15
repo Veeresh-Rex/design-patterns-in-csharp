@@ -1,4 +1,4 @@
-﻿using FoodDeliveryApp.Observers;
+using FoodDeliveryApp.Observers;
 
 namespace FoodDeliveryApp.Models;
 
@@ -8,11 +8,10 @@ public class Restaurant : IOrderObserver
     private string _name;
     private readonly string _address;
     private readonly Menu _menu;
+
     public Restaurant(string id, string name, string address)
+        : this(id, name, address, new Menu())
     {
-        _id = id;
-        _name = name;
-        _address = address;
     }
 
     public Restaurant(string id, string name, string address, Menu menu)
@@ -20,42 +19,27 @@ public class Restaurant : IOrderObserver
         _id = id;
         _name = name;
         _address = address;
-        _menu = menu;
+        _menu = menu ?? new Menu();
     }
 
-    public string GetId()
-    {
-        return _id;
-    }
-
-    public string GetName()
-    {
-
-        return _name;
-    }
-
-    public string GetAddress()
-    {
-        return _address;
-    }
+    public string GetId() => _id;
+    public string GetName() => _name;
+    public string GetAddress() => _address;
 
     public void UpdateName(string newName)
     {
-        _name = newName.ToLower();
+        _name = newName;
     }
 
-    public Menu GetMenu()
-    {
-        return _menu;
-    }
+    public Menu GetMenu() => _menu;
 
-    public void AddItemInMenu(Menuitem menuitem)
+    public void AddItemInMenu(MenuItem menuItem)
     {
-        _menu.AddItems(menuitem);
+        _menu.AddItems(menuItem);
     }
 
     public void Notify(Order order)
     {
-        Console.WriteLine($"Notification triggered for Restorant: Order status has been changed to {order.GetStatus()}");
+        Console.WriteLine($"Restaurant Notification - {GetName()}: Order {order.GetId()} status changed to {order.GetStatus()}");
     }
 }

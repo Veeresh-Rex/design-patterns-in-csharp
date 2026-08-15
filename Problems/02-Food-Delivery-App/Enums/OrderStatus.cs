@@ -1,11 +1,12 @@
-﻿namespace FoodDeliveryApp.Enums;
+namespace FoodDeliveryApp.Enums;
 
 public enum OrderStatus
 {
-    RECIEVED,
-    ACCEPETED,
+    RECEIVED,
+    ACCEPTED,
     PREPARING,
     READY_FOR_PICKUP,
-    OUTFORDELIVERY,
-    DELIVERED
+    OUT_FOR_DELIVERY,
+    DELIVERED,
+    CANCELLED
 }

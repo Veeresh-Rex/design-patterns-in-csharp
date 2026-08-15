@@ -1,4 +1,4 @@
-﻿using FoodDeliveryApp.Observers;
+using FoodDeliveryApp.Observers;
 
 namespace FoodDeliveryApp.Models;
 
@@ -12,32 +12,21 @@ public class User : IOrderObserver
     {
         _id = id;
         _name = name;
-        _cart = new Cart(); 
+        _cart = new Cart();
     }
 
-    public string GetName()
-    {
-        return _name;
-    }
+    public string GetName() => _name;
+    public string GetId() => _id;
+    public Cart GetCart() => _cart;
 
-    public string GetId()
+    public Cart AddItemsInCart(MenuItem menuItem, Restaurant restaurant, int quantity = 1)
     {
-        return _id;
-    }
-
-    public Cart GetCart()
-    {
-        return _cart;
-    }
-
-    public Cart AddItemsInCart(Menuitem menuitem)
-    {
-        _cart.AddMenuItem(menuitem);
+        _cart.AddMenuItem(menuItem, restaurant, quantity);
         return _cart;
     }
 
     public void Notify(Order order)
     {
-        Console.WriteLine($"Notification triggered for user {GetName()}: Order status has been changed to {order.GetStatus()}");
+        Console.WriteLine($"User Notification - {GetName()}: Order {order.GetId()} status changed to {order.GetStatus()}");
     }
 }

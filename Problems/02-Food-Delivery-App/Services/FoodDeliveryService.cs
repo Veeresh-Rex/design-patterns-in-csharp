@@ -1,4 +1,5 @@
-﻿using FoodDeliveryApp.Models;
+using FoodDeliveryApp.Enums;
+using FoodDeliveryApp.Models;
 using FoodDeliveryApp.Strategies.Payment;
 using FoodDeliveryApp.Strategies.Search;
 
@@ -6,80 +7,103 @@ namespace FoodDeliveryApp.Services;
 
 public class FoodDeliveryService
 {
-    private static FoodDeliveryService instance;
-    private readonly List<User> users = new();
-    private readonly List<Restaurant> restaurants = new();
-    private readonly List<Order> orders = new();
-    private IPaymentStrategy paymentStrategy;
-    private IRestaurantSearchStreatgy restaurantSearch;
+    private static readonly Lazy<FoodDeliveryService> _instance = new(() => new FoodDeliveryService());
+
+    private readonly List<User> _users = new();
+    private readonly List<Restaurant> _restaurants = new();
+    private readonly List<Order> _orders = new();
+
+    private IPaymentStrategy _paymentStrategy = new UpiPayment(); // Default strategy fallback
+    private IRestaurantSearchStrategy _restaurantSearch = new AddressBasedSearch(); // Default strategy fallback
 
     private FoodDeliveryService() { }
 
-    public static FoodDeliveryService GetInstance()
-    {
-        if(instance is null)
-        {
-            instance = new FoodDeliveryService();
-        }
+    public static FoodDeliveryService GetInstance() => _instance.Value;
 
-        return instance;
+    public void SetRestaurantSearchStrategy(IRestaurantSearchStrategy restaurantSearchService)
+    {
+        _restaurantSearch = restaurantSearchService ?? throw new ArgumentNullException(nameof(restaurantSearchService));
     }
 
-    public void SetRestoSearchStratgy(IRestaurantSearchStreatgy restaurantSearchService)
+    public void SetPaymentStrategy(IPaymentStrategy paymentStrategy)
     {
-        this.restaurantSearch = restaurantSearchService;
-    }
-
-    public void SetPaymentStretgy(IPaymentStrategy paymentStrategy)
-    {
-        this.paymentStrategy= paymentStrategy;
+        _paymentStrategy = paymentStrategy ?? throw new ArgumentNullException(nameof(paymentStrategy));
     }
 
     public User CreateUser(string userName)
     {
+        if (string.IsNullOrWhiteSpace(userName))
+            throw new ArgumentException("User name cannot be empty.", nameof(userName));
+
         Guid id = Guid.NewGuid();
-
-        User newuser = new User(id.ToString(), userName);
-
-        users.Add(newuser);
-
-        return newuser;
+        User newUser = new User(id.ToString(), userName);
+        _users.Add(newUser);
+        return newUser;
     }
 
-    public Restaurant CreateResto(string name, string address)
+    public Restaurant CreateRestaurant(string name, string address)
     {
-        Guid id = Guid.NewGuid();
-        Restaurant newResto = new Restaurant(id.ToString(),name, address, new Menu());
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Restaurant name cannot be empty.", nameof(name));
 
-        restaurants.Add(newResto);
+        Guid id = Guid.NewGuid();
+        Restaurant newResto = new Restaurant(id.ToString(), name, address, new Menu());
+        _restaurants.Add(newResto);
         return newResto;
-    }
-
-    public Order CreateOrder(string restoid, string userId, Cart cart) {
-        Guid id = Guid.NewGuid();
-        User user = users.FirstOrDefault(e => e.GetId() == userId);
-        Order newOrder = new Order(id.ToString(), cart, user, restaurants.FirstOrDefault(e => e.GetId() == restoid));
-
-        newOrder.Checkout(paymentStrategy);
-        newOrder.UpdateStatus(Enums.OrderStatus.RECIEVED);
-        orders.Add(newOrder);
-
-        return newOrder;
     }
 
     public List<Restaurant> SearchRestaurants(string keyword)
     {
-        return restaurantSearch.SearchResto(keyword, restaurants);
+        if (_restaurantSearch == null)
+            throw new InvalidOperationException("Restaurant search strategy is not set.");
+
+        return _restaurantSearch.SearchResto(keyword, _restaurants);
     }
 
-    public void MarkOrderOutForDelivery(string orderId) {
-        Order order = orders.FirstOrDefault(e => e.GetId() == orderId);
-        order.UpdateStatus(Enums.OrderStatus.OUTFORDELIVERY);
-    }
-
-    public void MarkorderDelivered(string orderId)
+    public Order CreateOrder(string restoId, string userId, Cart cart)
     {
-        Order order = orders.FirstOrDefault(e => e.GetId() == orderId);
-        order.UpdateStatus(Enums.OrderStatus.DELIVERED);
+        User user = _users.FirstOrDefault(e => e.GetId() == userId)
+                    ?? throw new KeyNotFoundException($"User with ID '{userId}' not found.");
+
+        Restaurant resto = _restaurants.FirstOrDefault(e => e.GetId() == restoId)
+                           ?? throw new KeyNotFoundException($"Restaurant with ID '{restoId}' not found.");
+
+        if (cart == null || cart.GetItems().Count == 0)
+            throw new InvalidOperationException("Cannot create an order with an empty cart.");
+
+        Guid orderId = Guid.NewGuid();
+        Order newOrder = new Order(orderId.ToString(), cart, user, resto);
+
+        bool paymentSuccess = newOrder.Checkout(_paymentStrategy);
+        if (!paymentSuccess)
+        {
+            throw new InvalidOperationException("Payment failed. Order creation aborted.");
+        }
+
+        newOrder.UpdateStatus(OrderStatus.RECEIVED);
+        _orders.Add(newOrder);
+
+        return newOrder;
+    }
+
+    public void MarkOrderOutForDelivery(string orderId)
+    {
+        Order order = _orders.FirstOrDefault(e => e.GetId() == orderId)
+                      ?? throw new KeyNotFoundException($"Order with ID '{orderId}' not found.");
+
+        order.UpdateStatus(OrderStatus.OUT_FOR_DELIVERY);
+    }
+
+    public void MarkOrderDelivered(string orderId)
+    {
+        Order order = _orders.FirstOrDefault(e => e.GetId() == orderId)
+                      ?? throw new KeyNotFoundException($"Order with ID '{orderId}' not found.");
+
+        order.UpdateStatus(OrderStatus.DELIVERED);
+    }
+
+    public Order? GetOrderById(string orderId)
+    {
+        return _orders.FirstOrDefault(e => e.GetId() == orderId);
     }
 }
