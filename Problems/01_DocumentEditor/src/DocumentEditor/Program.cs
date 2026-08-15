@@ -4,8 +4,6 @@ using DocumentEditor.Models;
 using DocumentEditor.Repositories;
 using DocumentEditor.Services;
 
-Console.WriteLine("=== 01_DocumentEditor System Demo ===");
-
 IDocumentRepository documentRepository = new DocumentRepository();
 IBlobStorageRepository blobStorageRepository = new AzureBlob();
 Document document = new Document();
