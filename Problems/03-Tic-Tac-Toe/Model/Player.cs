@@ -1,4 +1,4 @@
-﻿namespace TicTacToe.Model;
+namespace TicTacToe.Model;
 
 public class Player
 {
@@ -8,7 +8,14 @@ public class Player
 
     public Player(string id, string name, Symbol symbol)
     {
+        this.id = id;
+        this.name = name;
+        this.symbol = symbol;
+    }
 
+    public string GetId()
+    {
+        return id;
     }
 
     public string GetName()

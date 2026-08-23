@@ -1,4 +1,4 @@
-﻿using TicTacToe.Model;
+using TicTacToe.Model;
 
 namespace TicTacToe.Strategy;
 
@@ -6,23 +6,27 @@ public class RowWinStrategy : IWinningStrategy
 {
     public bool IsGameWin(Board board)
     {
-        for (int i = 0; i < board.GetSize(); i++)
+        int size = board.GetSize();
+        for (int i = 0; i < size; i++)
         {
-            bool isAllRowHaveSameSymbol = false;
-            char firstRowMark = board.GetCellValue(i, 0).GetMark();
-
-            for (int j = 1; j < board.GetSize(); j++)
+            Symbol firstSymbol = board.GetCellValue(i, 0);
+            if (firstSymbol.IsDefault())
             {
-                if (board.GetCellValue(i, j).GetMark() == firstRowMark)
-                {
-                    isAllRowHaveSameSymbol = true;
-                }
-                else
+                continue;
+            }
+
+            char firstMark = firstSymbol.GetMark();
+            bool isAllRowHaveSameSymbol = true;
+
+            for (int j = 1; j < size; j++)
+            {
+                if (board.GetCellValue(i, j).GetMark() != firstMark)
                 {
                     isAllRowHaveSameSymbol = false;
                     break;
                 }
             }
+
             if (isAllRowHaveSameSymbol)
             {
                 return true;

@@ -1,4 +1,4 @@
-﻿using TicTacToe.Enums;
+using TicTacToe.Enums;
 using TicTacToe.Observer;
 using TicTacToe.Strategy;
 
@@ -10,11 +10,26 @@ public class Game
     private readonly LinkedList<Player> players = new LinkedList<Player>();
     private readonly List<IWinningStrategy> winningStrategies = new List<IWinningStrategy>();
     private readonly List<IObserver> observers = new List<IObserver>();
-    private GameStatus gameStatus;
+    private GameStatus gameStatus = GameStatus.InProgress;
+
+    public Game(int boardSize = 3)
+    {
+        _board = new Board(boardSize);
+    }
+
+    public Game(Board board)
+    {
+        _board = board;
+    }
+
+    public void AddObserver(IObserver observer)
+    {
+        observers.Add(observer);
+    }
 
     public void Addobserver(IObserver observer)
     {
-        observers.Add(observer);
+        AddObserver(observer);
     }
 
     public void NotifyObserver(string message)
@@ -37,13 +52,31 @@ public class Game
 
     public void AddMove(int row, int column)
     {
-        var player = players.First();
-        if (_board.IsCellEmpty(row, column))
+        if (gameStatus != GameStatus.InProgress)
         {
-            Console.WriteLine("This cell is already occupied, can't make a move");
+            Console.WriteLine("Game is not in progress.");
             return;
         }
 
+        if (players.Count == 0)
+        {
+            Console.WriteLine("No players registered in the game.");
+            return;
+        }
+
+        if (row < 0 || row >= _board.GetSize() || column < 0 || column >= _board.GetSize())
+        {
+            Console.WriteLine($"Invalid move position ({row}, {column}). Out of board bounds.");
+            return;
+        }
+
+        if (!_board.IsCellEmpty(row, column))
+        {
+            Console.WriteLine($"This cell ({row}, {column}) is already occupied, can't make a move.");
+            return;
+        }
+
+        var player = players.First();
         _board.MarkCell(row, column, player.GetSymbol());
         players.RemoveFirst();
 
@@ -74,7 +107,7 @@ public class Game
 
     public bool IsGameDraw()
     {
-        return _board.IsAllCellFilled();
+        return _board.IsAllCellFilled() && !IsWinner();
     }
 
     public bool IsWinner()

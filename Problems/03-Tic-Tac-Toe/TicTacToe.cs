@@ -1,15 +1,16 @@
-﻿using TicTacToe.Enums;
+using TicTacToe.Enums;
 using TicTacToe.Model;
 using TicTacToe.Observer;
 using TicTacToe.Strategy;
 
-namespace TicTacToel;
+namespace TicTacToe;
 
 public class TicTacToe
 {
-    private static TicTacToe instance;
-    private static object lockObj = new object();
-    private Game game;
+    private static TicTacToe? instance;
+    private static readonly object lockObj = new object();
+    private Game? game;
+
     private TicTacToe()
     {
 
@@ -17,11 +18,11 @@ public class TicTacToe
 
     public static TicTacToe GetInstance()
     {
-        if(instance == null)
+        if (instance == null)
         {
             lock (lockObj)
             {
-                if(instance == null)
+                if (instance == null)
                 {
                     instance = new TicTacToe();
                 }
@@ -30,15 +31,15 @@ public class TicTacToe
         return instance;
     }
 
-    public Game CreateGame(List<Player> players)
+    public Game CreateGame(List<Player> players, int boardSize = 3)
     {
-        game = new Game();
+        game = new Game(boardSize);
         foreach (var player in players)
         {
             game.AddPlayers(player);
         }
 
-        game.Addobserver(new NotificationObserver());
+        game.AddObserver(new NotificationObserver());
 
         game.SetWinningStrategies(new ColumnWinStrategy());
         game.SetWinningStrategies(new RowWinStrategy());
@@ -49,24 +50,44 @@ public class TicTacToe
 
     public void MakeMove(int row, int column)
     {
+        if (game == null)
+        {
+            Console.WriteLine("No active game. Please create a game first.");
+            return;
+        }
+
+        if (game.GetGameStatus() != GameStatus.InProgress)
+        {
+            Console.WriteLine("Game has already ended. Cannot make more moves.");
+            return;
+        }
+
         game.AddMove(row, column);
         DisplayBoard();
+
         if (game.IsWinner())
         {
             var player = game.GetLatestMovePlayer();
-            Console.WriteLine($"Player {player.GetName()} won the game");
-            game.UpdateStatus(GameStatus.DrawEnd);
+            Console.WriteLine($"Player {player.GetName()} won the game!");
+            game.UpdateStatus(GameStatus.WinEnd);
+            return;
         }
 
         if (game.IsGameDraw())
         {
-            Console.WriteLine("Game draw");
+            Console.WriteLine("Game draw!");
             game.UpdateStatus(GameStatus.DrawEnd);
+            return;
         }
     }
 
     public void DisplayBoard()
     {
+        if (game == null)
+        {
+            Console.WriteLine("No active game board to display.");
+            return;
+        }
         game.GetBoard().Display();
     }
 }

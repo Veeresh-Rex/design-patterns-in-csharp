@@ -1,4 +1,4 @@
-﻿using TicTacToe.Model;
+using TicTacToe.Model;
 
 namespace TicTacToe.Strategy;
 
@@ -6,23 +6,42 @@ public class DiagonalWinStrategy : IWinningStrategy
 {
     public bool IsGameWin(Board board)
     {
-        bool isAllRowHaveSameSymbol = false;
-        char firstRowMark = board.GetCellValue(0, 0).GetMark();
+        int size = board.GetSize();
 
-        for (int i = 1; i < board.GetSize(); i++)
+        // Check main diagonal (top-left to bottom-right)
+        Symbol mainFirstSymbol = board.GetCellValue(0, 0);
+        if (!mainFirstSymbol.IsDefault())
         {
-
-            if (board.GetCellValue(i, 0).GetMark() == firstRowMark)
+            char mainMark = mainFirstSymbol.GetMark();
+            bool mainWin = true;
+            for (int i = 1; i < size; i++)
             {
-                isAllRowHaveSameSymbol = true;
+                if (board.GetCellValue(i, i).GetMark() != mainMark)
+                {
+                    mainWin = false;
+                    break;
+                }
             }
-            else
-            {
-                isAllRowHaveSameSymbol = false;
-                break;
-            }
+            if (mainWin) return true;
         }
 
-        return isAllRowHaveSameSymbol;
+        // Check anti-diagonal (top-right to bottom-left)
+        Symbol antiFirstSymbol = board.GetCellValue(0, size - 1);
+        if (!antiFirstSymbol.IsDefault())
+        {
+            char antiMark = antiFirstSymbol.GetMark();
+            bool antiWin = true;
+            for (int i = 1; i < size; i++)
+            {
+                if (board.GetCellValue(i, size - 1 - i).GetMark() != antiMark)
+                {
+                    antiWin = false;
+                    break;
+                }
+            }
+            if (antiWin) return true;
+        }
+
+        return false;
     }
 }

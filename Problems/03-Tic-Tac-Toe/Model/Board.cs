@@ -1,13 +1,13 @@
-﻿namespace TicTacToe.Model;
+namespace TicTacToe.Model;
 
 public class Board
 {
     private readonly List<List<Symbol>> grid;
-    public Board(int size)
+    public Board(int size = 3)
     {
         grid = Enumerable
             .Range(0, size)
-            .Select(_ => Enumerable.Repeat(new Symbol(), size).ToList())
+            .Select(_ => Enumerable.Range(0, size).Select(_ => new Symbol()).ToList())
             .ToList();
     }
 
@@ -24,7 +24,7 @@ public class Board
 
     public bool IsAllCellFilled()
     {
-        return grid.Any(e => e.Any(y => y.IsDefault()));
+        return !grid.Any(e => e.Any(y => y.IsDefault()));
     }
 
     public Symbol GetCellValue(int row, int column)
@@ -36,14 +36,14 @@ public class Board
     {
         foreach (var row in grid)
         {
-            Console.WriteLine(string.Join(" ",row.Select(e => e.GetMark())));
+            Console.WriteLine(string.Join(" ", row.Select(e => e.GetMark())));
         }
     }
 
     public void MarkCell(int row, int column, Symbol symbol)
     {
         var cell = grid[row][column];
-        if (cell.IsDefault())
+        if (!cell.IsDefault())
         {
             throw new InvalidOperationException("Cell is already marked");
         }
