@@ -27,11 +27,6 @@ public class Game
         observers.Add(observer);
     }
 
-    public void Addobserver(IObserver observer)
-    {
-        AddObserver(observer);
-    }
-
     public void NotifyObserver(string message)
     {
         foreach (var item in observers)

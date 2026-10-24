@@ -8,9 +8,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Folder Include="Strategies\FeeCalculation\" />
-    <Folder Include="Strategies\ParkingFindStrategy\" />
-  </ItemGroup>
-
 </Project>
