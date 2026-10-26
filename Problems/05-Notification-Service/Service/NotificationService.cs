@@ -1,10 +1,13 @@
 using _05_Notification_Service.Decorator;
 using _05_Notification_Service.Enums;
 using _05_Notification_Service.Models;
+using _05_Notification_Service.Queue;
 using _05_Notification_Service.Strategy.NotificationChannel;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace _05_Notification_Service.Service;
@@ -12,110 +15,87 @@ namespace _05_Notification_Service.Service;
 public class NotificationService
 {
     private static readonly Lazy<NotificationService> instance =
-        new Lazy<NotificationService>(() => new NotificationService());
+        new(() => new NotificationService());
 
-    private RetryService retryPolicy;
-    private readonly List<INotificationChannel> notificationStrategies;
+    private readonly ConcurrentDictionary<NotificationChannelEnum, INotificationChannel> _channelStrategies = new();
+    private readonly PriorityNotificationQueue _queue = new();
 
     private NotificationService()
     {
-        retryPolicy = new RetryService(3);
-        notificationStrategies = new List<INotificationChannel>
-        {
-            new EmailNotificationChannel(),
-            new SmsNotificationChannel(),
-            new WhatsAppNotificationChannel(),
-            new InAppNotificationChannel()
-        };
+        RegisterChannel(new EmailNotificationChannel());
+        RegisterChannel(new SmsNotificationChannel());
+        RegisterChannel(new WhatsAppNotificationChannel());
+        RegisterChannel(new InAppNotificationChannel());
     }
 
-    public static NotificationService GetInstance()
-    {
-        return instance.Value;
-    }
+    public static NotificationService GetInstance() => instance.Value;
 
-    public void SetRetryPolicy(RetryService policy)
-    {
-        retryPolicy = policy ?? throw new ArgumentNullException(nameof(policy));
-    }
+    public PriorityNotificationQueue Queue => _queue;
 
     public void RegisterChannel(INotificationChannel channel)
     {
         if (channel == null) throw new ArgumentNullException(nameof(channel));
-        notificationStrategies.RemoveAll(c => c.NotificationChannel == channel.NotificationChannel);
-        notificationStrategies.Add(channel);
+        _channelStrategies[channel.NotificationChannel] = channel;
     }
 
     public void RemoveChannel(NotificationChannelEnum channelType)
     {
-        notificationStrategies.RemoveAll(c => c.NotificationChannel == channelType);
+        _channelStrategies.TryRemove(channelType, out _);
     }
 
-    public IReadOnlyList<INotificationChannel> GetRegisteredChannels()
+    public IReadOnlyCollection<INotificationChannel> GetRegisteredChannels() => _channelStrategies.Values.ToList();
+
+    public void Enqueue(Notification notification)
     {
-        return notificationStrategies.AsReadOnly();
+        _queue.Enqueue(notification);
     }
 
-    public async Task<bool> SendNotificationAsync(Notification notification, params NotificationChannelEnum[] channels)
+    public async Task<bool> ProcessNextQueuedAsync(CancellationToken ct = default)
     {
-        return await SendNotificationAsync(notification, (IEnumerable<NotificationChannelEnum>)channels);
+        var notification = await _queue.DequeueAsync(ct);
+        return await SendNotificationAsync(notification);
     }
 
-    public async Task<bool> SendNotificationAsync(Notification notification, IEnumerable<NotificationChannelEnum>? channels = null)
+    public async Task<int> ProcessAllQueuedAsync(CancellationToken ct = default)
     {
-        if (notification == null)
+        int processedCount = 0;
+        while (_queue.TryDequeue(out var notification) && notification != null)
         {
-            throw new ArgumentNullException(nameof(notification));
+            await SendNotificationAsync(notification);
+            processedCount++;
+        }
+        return processedCount;
+    }
+
+    public async Task<bool> SendNotificationAsync(Notification notification, params NotificationChannelEnum[] requestedChannels)
+    {
+        if (notification == null) throw new ArgumentNullException(nameof(notification));
+
+        Notification prepared = notification;
+        while (prepared is NotificationDecorator decorator)
+        {
+            prepared = decorator.GetNotification();
         }
 
-        // 1. Unwrap decorators if present
-        Notification preparedNotification = notification;
-        while (preparedNotification is NotificationDecorator decorator)
-        {
-            preparedNotification = decorator.GetNotification();
-        }
+        prepared.NotificationContent ??= new NotificationContent();
 
-        preparedNotification.NotificationContent ??= new NotificationContent();
+        var retryPolicy = GetRetryPolicyForPriority(prepared.Priority);
 
-        // 2. Determine target channels dynamically:
-        //    Priority 1: Explicit channels passed into method call
-        //    Priority 2: Channels defined in notification.Channels
-        //    Priority 3: Broadcast to all registered channels if none specified
-        List<NotificationChannelEnum> targetChannels;
-
-        if (channels != null && channels.Any())
-        {
-            targetChannels = channels.Distinct().ToList();
-        }
-        else if (preparedNotification.Channels != null && preparedNotification.Channels.Count > 0)
-        {
-            targetChannels = preparedNotification.Channels.Distinct().ToList();
-        }
-        else
-        {
-            targetChannels = notificationStrategies.Select(s => s.NotificationChannel).ToList();
-        }
-
-        if (targetChannels.Count == 0)
-        {
-            Console.WriteLine("[ERROR] No notification channels available to send.");
-            return false;
-        }
+        var channelsToSend = requestedChannels.Length > 0
+            ? requestedChannels.Distinct()
+            : (prepared.Channels.Count > 0 ? prepared.Channels.Distinct() : _channelStrategies.Keys);
 
         bool allSucceeded = true;
-        foreach (var channelType in targetChannels)
+        foreach (var channelType in channelsToSend)
         {
-            var strategy = notificationStrategies.FirstOrDefault(s => s.NotificationChannel == channelType);
-            if (strategy == null)
+            if (_channelStrategies.TryGetValue(channelType, out var strategy))
             {
-                Console.WriteLine($"[ERROR] No notification strategy registered for channel '{channelType}'.");
-                allSucceeded = false;
-                continue;
+                bool sent = await retryPolicy.ExecuteAsync(() => strategy.SendNotification(prepared));
+                if (!sent) allSucceeded = false;
             }
-
-            bool success = await retryPolicy.ExecuteAsync(() => strategy.SendNotification(preparedNotification));
-            if (!success)
+            else
             {
+                Console.WriteLine($"[ERROR] Channel '{channelType}' is not registered.");
                 allSucceeded = false;
             }
         }
@@ -123,13 +103,16 @@ public class NotificationService
         return allSucceeded;
     }
 
-    public bool SendNotification(Notification notification, params NotificationChannelEnum[] channels)
+    public bool SendNotification(Notification notification, params NotificationChannelEnum[] requestedChannels)
     {
-        return SendNotificationAsync(notification, channels).GetAwaiter().GetResult();
+        return SendNotificationAsync(notification, requestedChannels).GetAwaiter().GetResult();
     }
 
-    public bool SendNotification(Notification notification, IEnumerable<NotificationChannelEnum>? channels = null)
+    private static RetryService GetRetryPolicyForPriority(NotificationPriority priority) => priority switch
     {
-        return SendNotificationAsync(notification, channels).GetAwaiter().GetResult();
-    }
+        NotificationPriority.HIGH => new RetryService(retryMaxCount: 3),
+        NotificationPriority.MEDIUM => new RetryService(retryMaxCount: 2),
+        NotificationPriority.LOW => new RetryService(retryMaxCount: 1),
+        _ => new RetryService(retryMaxCount: 1)
+    };
 }

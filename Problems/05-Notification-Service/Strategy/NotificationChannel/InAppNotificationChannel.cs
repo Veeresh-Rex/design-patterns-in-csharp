@@ -9,7 +9,7 @@ public class InAppNotificationChannel : INotificationChannel
 
     public bool SendNotification(Notification notification)
     {
-        Console.WriteLine($"[IN-APP] Sent to User '{notification.Recipient.Name}' (ID: {notification.Recipient.Id}) | Priority: {notification.NotificationPriority} | Body: {notification.NotificationContent.Body}");
+        Console.WriteLine($"[IN-APP] Sent to User '{notification.Recipient.Name}' (ID: {notification.Recipient.Id}) | Priority: {notification.Priority} | Body: {notification.NotificationContent.Body}");
         return true;
     }
 }

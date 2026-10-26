@@ -13,7 +13,7 @@ public abstract class NotificationDecorator : Notification
         this.notification = notification ?? throw new ArgumentNullException(nameof(notification));
         Id = notification.Id;
         Recipient = notification.Recipient;
-        NotificationPriority = notification.NotificationPriority;
+        Priority = notification.Priority;
         NotificationContent = notification.NotificationContent;
         Channels = new List<Enums.NotificationChannelEnum>(notification.Channels);
     }

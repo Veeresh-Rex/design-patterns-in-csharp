@@ -12,7 +12,7 @@ public class WhatsAppNotificationChannel : INotificationChannel
 
     public bool SendNotification(Notification notification)
     {
-        Console.WriteLine($"[WHATSAPP] Sent to '{notification.Recipient.PhoneNumber}' | Priority: {notification.NotificationPriority} | Body: {notification.NotificationContent.Body}");
+        Console.WriteLine($"[WHATSAPP] Sent to '{notification.Recipient.PhoneNumber}' | Priority: {notification.Priority} | Body: {notification.NotificationContent.Body}");
         return true;
     }
 }

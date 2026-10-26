@@ -12,7 +12,7 @@ public class EmailNotificationChannel : INotificationChannel
 
     public bool SendNotification(Notification notification)
     {
-        Console.WriteLine($"[EMAIL] Sent to '{notification.Recipient.Email}' | Priority: {notification.NotificationPriority} | Body: {notification.NotificationContent.Body}");
+        Console.WriteLine($"[EMAIL] Sent to '{notification.Recipient.Email}' | Priority: {notification.Priority} | Body: {notification.NotificationContent.Body}");
         return true;
     }
 }

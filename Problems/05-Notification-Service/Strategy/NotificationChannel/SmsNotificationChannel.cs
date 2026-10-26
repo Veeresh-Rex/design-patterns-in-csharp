@@ -12,7 +12,7 @@ public class SmsNotificationChannel : INotificationChannel
 
     public bool SendNotification(Notification notification)
     {
-        Console.WriteLine($"[SMS] Sent to '{notification.Recipient.PhoneNumber}' | Priority: {notification.NotificationPriority} | Body: {notification.NotificationContent.Body}");
+        Console.WriteLine($"[SMS] Sent to '{notification.Recipient.PhoneNumber}' | Priority: {notification.Priority} | Body: {notification.NotificationContent.Body}");
         return true;
     }
 }

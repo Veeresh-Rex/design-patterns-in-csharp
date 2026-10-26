@@ -10,11 +10,9 @@ Console.WriteLine("       NOTIFICATION SERVICE DEMO SYSTEM           ");
 Console.WriteLine("==================================================");
 Console.WriteLine();
 
-// 1. Get Singleton NotificationService Instance
 Console.WriteLine("[INFO] Initializing NotificationService (Singleton)...");
 var notificationService = NotificationService.GetInstance();
 
-// 2. Setup Recipient Users
 var userAlice = new User
 {
     Id = 101,
@@ -35,62 +33,56 @@ Console.WriteLine($"[INFO] Created user Alice ({userAlice.Email}, {userAlice.Pho
 Console.WriteLine($"[INFO] Created user Bob ({userBob.Email}, {userBob.PhoneNumber})");
 Console.WriteLine();
 
-// 3. Send Notification via specific channel (Email)
 Console.WriteLine("--- 1. Sending Email Notification ---");
 var emailNotification = new Notification
 {
     Recipient = userAlice,
-    NotificationPriority = NotificationPriority.MEDIUM,
+    Priority = NotificationPriority.MEDIUM,
     NotificationContent = new NotificationContent { Body = "Your monthly statement is ready." },
-    Channel = NotificationChannelEnum.EMAIL
+    Channels = { NotificationChannelEnum.EMAIL }
 };
 notificationService.SendNotification(emailNotification);
 Console.WriteLine();
 
-// 4. Send Notification with Decorator Pattern (Urgent + Timestamp)
 Console.WriteLine("--- 2. Sending Decorated High-Priority Notification (Urgent + Timestamp) ---");
 var rawAlert = new Notification
 {
     Recipient = userBob,
-    NotificationPriority = NotificationPriority.HIGH,
+    Priority = NotificationPriority.HIGH,
     NotificationContent = new NotificationContent { Body = "Security alert: Suspicious login detected!" },
-    Channel = NotificationChannelEnum.SMS
+    Channels = { NotificationChannelEnum.SMS }
 };
 
-// Decorate with UrgentDecorator and TimeStampDecorator
 Notification decoratedAlert = new TimeStampDecorator(new UrgentDecorator(rawAlert));
 notificationService.SendNotification(decoratedAlert);
 Console.WriteLine();
 
-// 5. Send WhatsApp & In-App Notifications
 Console.WriteLine("--- 3. Sending WhatsApp and In-App Notifications ---");
 var whatsappNotification = new Notification
 {
     Recipient = userAlice,
-    NotificationPriority = NotificationPriority.LOW,
+    Priority = NotificationPriority.LOW,
     NotificationContent = new NotificationContent { Body = "Your order #1234 has been shipped." },
-    Channel = NotificationChannelEnum.WHATSAPP
+    Channels = { NotificationChannelEnum.WHATSAPP }
 };
 notificationService.SendNotification(whatsappNotification);
 
 var inAppNotification = new Notification
 {
     Recipient = userBob,
-    NotificationPriority = NotificationPriority.MEDIUM,
+    Priority = NotificationPriority.MEDIUM,
     NotificationContent = new NotificationContent { Body = "You have 3 unread messages." },
-    Channel = NotificationChannelEnum.INAPP
+    Channels = { NotificationChannelEnum.INAPP }
 };
 notificationService.SendNotification(inAppNotification);
 Console.WriteLine();
 
-// 6. Dynamic Multi-Channel Notification (e.g. send to SMS and WhatsApp)
 Console.WriteLine("--- 4. Sending Dynamically to Selected Channels (SMS + WhatsApp) ---");
 
-// Approach A: Specify dynamic channels inside the notification itself
 var multiChannelNotification1 = new Notification
 {
     Recipient = userAlice,
-    NotificationPriority = NotificationPriority.HIGH,
+    Priority = NotificationPriority.HIGH,
     NotificationContent = new NotificationContent { Body = "OTP: 987654. Do not share this with anyone." },
     Channels = new List<NotificationChannelEnum>
     {
@@ -102,11 +94,10 @@ Console.WriteLine("[INFO] Approach A: Channels configured on Notification model:
 notificationService.SendNotification(multiChannelNotification1);
 Console.WriteLine();
 
-// Approach B: Specify dynamic channels directly in the SendNotification call
 var multiChannelNotification2 = new Notification
 {
     Recipient = userBob,
-    NotificationPriority = NotificationPriority.HIGH,
+    Priority = NotificationPriority.HIGH,
     NotificationContent = new NotificationContent { Body = "Transaction Alert: $150.00 debited from account." }
 };
 Console.WriteLine("[INFO] Approach B: Channels passed dynamically in SendNotification call:");
@@ -117,18 +108,16 @@ notificationService.SendNotification(
 );
 Console.WriteLine();
 
-// 7. Broadcast across all registered channels (when no channels specified)
 Console.WriteLine("--- 5. Broadcasting Notification Across All Registered Channels ---");
 var broadcastNotification = new Notification
 {
     Recipient = userAlice,
-    NotificationPriority = NotificationPriority.HIGH,
+    Priority = NotificationPriority.HIGH,
     NotificationContent = new NotificationContent { Body = "Critical system maintenance scheduled tonight at 12:00 AM UTC." }
 };
 notificationService.SendNotification(broadcastNotification);
 Console.WriteLine();
 
-// 8. Dynamic Channel Strategy Registration (Open-Closed Principle)
 Console.WriteLine("--- 6. Dynamic Strategy Registration ---");
 Console.WriteLine($"[INFO] Total registered channels: {notificationService.GetRegisteredChannels().Count}");
 Console.WriteLine("[INFO] Removing SMS channel...");
@@ -138,6 +127,55 @@ Console.WriteLine($"[INFO] Total registered channels now: {notificationService.G
 Console.WriteLine("[INFO] Re-registering SMS channel...");
 notificationService.RegisterChannel(new SmsNotificationChannel());
 Console.WriteLine($"[INFO] Total registered channels now: {notificationService.GetRegisteredChannels().Count}");
+Console.WriteLine();
+
+Console.WriteLine("--- 7. Priority Notification Queue (Higher Priority First, FIFO Tie-Breaking) ---");
+Console.WriteLine("[INFO] Enqueuing notifications in mixed priority order:");
+
+var low1 = new Notification
+{
+    Recipient = userAlice,
+    Priority = NotificationPriority.LOW,
+    NotificationContent = new NotificationContent { Body = "[1] Promo: 20% off on your next purchase!" },
+    Channels = { NotificationChannelEnum.EMAIL }
+};
+Console.WriteLine("  -> Enqueued: [LOW] Promo 20% off");
+notificationService.Enqueue(low1);
+
+var med1 = new Notification
+{
+    Recipient = userBob,
+    Priority = NotificationPriority.MEDIUM,
+    NotificationContent = new NotificationContent { Body = "[2] Order #5544 is being packed." },
+    Channels = { NotificationChannelEnum.INAPP }
+};
+Console.WriteLine("  -> Enqueued: [MEDIUM] Order #5544 update");
+notificationService.Enqueue(med1);
+
+var high1 = new Notification
+{
+    Recipient = userAlice,
+    Priority = NotificationPriority.HIGH,
+    NotificationContent = new NotificationContent { Body = "[3] SECURITY: New login from unknown device!" },
+    Channels = { NotificationChannelEnum.SMS }
+};
+Console.WriteLine("  -> Enqueued: [HIGH - 1st] Security Alert");
+notificationService.Enqueue(high1);
+
+var high2 = new Notification
+{
+    Recipient = userBob,
+    Priority = NotificationPriority.HIGH,
+    NotificationContent = new NotificationContent { Body = "[4] OTP: 443322 for password reset." },
+    Channels = { NotificationChannelEnum.WHATSAPP }
+};
+Console.WriteLine("  -> Enqueued: [HIGH - 2nd] Password Reset OTP");
+notificationService.Enqueue(high2);
+
+Console.WriteLine();
+Console.WriteLine($"[INFO] Queue contains {notificationService.Queue.Count} items. Processing queue in priority order...");
+
+await notificationService.ProcessAllQueuedAsync();
 Console.WriteLine();
 
 Console.WriteLine("==================================================");
